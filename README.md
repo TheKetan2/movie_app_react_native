@@ -20,6 +20,10 @@
 - install all dependencies with `npm install`
 - run `npm start`
 
+# Try It On Expo:
+
+- https://snack.expo.io/@xeteke8423/movie_app_tmdb_api
+
 # Final App:
 
 ![](assets/screen.gif)
