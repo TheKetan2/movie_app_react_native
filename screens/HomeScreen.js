@@ -15,48 +15,26 @@ import Constants from 'expo-constants';
 import axios from 'axios';
 
 import Loading from '../components/Loading';
-
-import { URL, API_KEY } from '../const';
+import {fetchMovies} from "../servises/servises";
 
 const screen = Dimensions.get('screen');
 
 const HomeScreen = ({ navigation }) => {
   const [movies, setMovies] = useState([]);
-  const [search, setSearch] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [searchNow, setSearchNow] = useState(false);
 
   //fetches movie and stores them in movies state
-  const fetchMovies = () => {
-    console.log('fetch movies');
-    setLoading(true);
-    if (search.length === 0) {
-      axios
-        .get(`${URL}movie/popular?api_key=${API_KEY}&page=${page}`)
-        .then((respose) => {
-          setMovies([...movies, ...respose.data.results]);
-          console.log('aah: ', JSON.stringify(respose.data.results[0]));
-          setLoading(false);
-        })
-        .catch((error) => console.log(error));
-    } else {
-      axios
-        .get(
-          `${URL}search/movie?api_key=${API_KEY}&language=en-US&query=${search}`
-        )
-        .then((respose) => {
-          setMovies(respose.data.results);
-          console.log(JSON.stringify(respose.data.results[0]));
-          setLoading(false);
-        })
-        .catch((error) => console.log(error));
-    }
-  };
 
   useEffect(() => {
-    fetchMovies(search);
-    console.log('hihii');
-  }, []);
+    setLoading(true);
+    fetchMovies(searchTerm, movies).then((data) => {
+      setMovies(data);
+      setLoading(false);
+    });
+  }, [searchNow]);
 
   return loading ? (
     <Loading />
@@ -84,16 +62,16 @@ const HomeScreen = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder={'search movies'}
-            value={search}
-            onChangeText={(text) => setSearch(text)}
+            value={searchTerm}
+            onChangeText={(text) => setSearchTerm(text)}
           />
           <TouchableOpacity
             onPress={() => {
               console.log('pressed');
-              fetchMovies();
+              setSearchNow(!searchNow);
             }}>
             <EvilIcons
-              name={search ? 'search' : 'refresh'}
+              name={searchTerm ? 'search' : 'refresh'}
               size={20}
               color="black"
               style={{ alignSelf: 'center', marginHorizontal: 20 }}
